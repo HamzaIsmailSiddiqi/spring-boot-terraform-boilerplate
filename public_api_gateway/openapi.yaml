@@ -1,0 +1,299 @@
+openapi: '3.0.2'
+info:
+  title: Technetium.io API
+  version: '1.0.0'
+  contact:
+    email: support@technetium.io
+externalDocs:
+  url: https://technetium.io/ # just an example. It will be defined
+
+paths:
+  /v1/technetium/information:
+    get:
+      operationId: getTechnetiumInformation
+      tags:
+        - technetium
+      summary: Returns general information regarding a technetium.
+      description: This endpoint returns general information about a technetium in an array of objects format. The response includes technetium information related to parcel, legal, address, owners, tax, use, sales, and size. The response will contain all properties that match the provided parameters. If there are no properties that match the parameters provided, an empty array will be returned.
+      parameters:
+        - $ref: '#/components/parameters/tr'
+        - $ref: '#/components/parameters/ddl'
+        - $ref: '#/components/parameters/his'
+        - $ref: '#/components/parameters/sid'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          description: Technetium information was found
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/technetiumInformationResponse'
+        '400':
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Authorization information is missing or invalid.
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: "Internal Server Error"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      x-amazon-apigateway-integration:
+        uri: ${uri}/v1/technetium/information
+        connectionId: ${connectionId}
+        connectionType: "VPC_LINK"
+        httpMethod: "GET"
+        type: "HTTP_PROXY"
+        apiKeyRequired: true
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: |
+                {}
+      security:
+        - api-key: [ ]
+        - public-api-authorizer:
+            - ${readScope}
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+        - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: { }
+        401:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: { }
+        500:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: { }
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: |
+                {}
+components:
+  parameters:
+    tr:
+      name: tr
+      in: query
+      required: false
+      schema:
+        type: string
+    his:
+      name: his
+      in: query
+      required: true
+      schema:
+        type: string
+        pattern: '^[0-9]{5}$'
+        example: 01325
+    ddl:
+      name: ddl
+      in: query
+      required: true
+      schema:
+        type: string
+    sid:
+      name: sid
+      in: query
+      required: false
+      schema:
+        type: string
+    f:
+      name: f
+      in: query
+      required: false
+      schema:
+        type: string
+    street_line_1:
+      name: street_line_1
+      in: query
+      required: true
+      schema:
+        type: string
+    street_line_2:
+      name: street_line_2
+      in: query
+      required: false
+      schema:
+        type: string
+    city:
+      name: city
+      in: query
+      required: true
+      schema:
+        type: string
+    state:
+      name: state
+      in: query
+      required: true
+      schema:
+        type: string
+    postal_code:
+      name: postal_code
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 12345
+    country_code:
+      name: country_code
+      in: query
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z]{2}$'
+        example: US
+  schemas:
+    technetiumInformation:
+      title: TechnetiumInformation
+      type: object
+      properties:
+        his_code:
+          type: string
+        county:
+          type: string
+        unformatted_ddl:
+          type: string
+        formatted_ddl:
+          type: string
+    technetiumInformationResponse:
+      type: object
+      title: TechnetiumInformationResponse
+      properties:
+        data:
+          description: "Response data"
+          type: array
+          items:
+            $ref: "#/components/schemas/technetiumInformation"
+        total_records:
+          type: number
+    errorResponse:
+      type: object
+      title: ErrorResponse
+      properties:
+        message:
+          type: string
+          description: "Message describing the error"
+        error_subcode:
+          type: string
+        "type":
+          type: string
+          example: "Bad Request"
+        time_stamp:
+          type: string
+          format: date-time
+  securitySchemes:
+    api-key:
+      type: apiKey
+      name: x-api-key
+      in: header
+      x-amazon-apigateway-api-key-source: HEADER
+    public-api-authorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: cognito_user_pools
+      x-amazon-apigateway-authorizer:
+        type: cognito_user_pools
+        providerARNs:
+          - ${userPoolArn}
